@@ -35,6 +35,7 @@
 #include <iostream>
 #include "../common/debug.h"
 #include "../common/ITG.h"
+#include "../common/json_output.h"
 
 using namespace std;
 
@@ -556,6 +557,9 @@ int main(int argc, char *argv[])
 			exit(1);
 		}
 	}
+
+	// Initialize the JSON output file (you can specify the filename as needed)
+    initialize_json_output("se_.json.gz");
 	
 	size = 1;
 	while (size > 0) {
@@ -572,7 +576,7 @@ int main(int argc, char *argv[])
 					(*infos).txTime1 = (*send_info).txTime1;
 					(*infos).txTime2 = (*send_info).txTime2;
 					(*infos).txTime3 = (*send_info).txTime3;
-
+    				std::cout << "txTime3: " << infos->txTime3 << ", rxTime3: " << infos->rxTime3 << std::endl;
 				}
 			}
 			if (flagps)
@@ -591,8 +595,9 @@ int main(int argc, char *argv[])
 				fprintf(octavefpout, "%u\n", (*infos).size);
 				fflush(octavefpout);
 			}
+			// Process the packet and add it to the JSON output
+			process_packet_to_json(infos);
 
-			
 			errornum = 0;
 			if (((*infos).txTime1 > 24) || ((*infos).txTime1 < 0))
 				errornum = 1;
@@ -868,6 +873,8 @@ int main(int argc, char *argv[])
 		printf("----------------------------------------------------------\n");
 	}
 
+    // Finalize the JSON output file
+	finalize_json_output();
 	
 	if (logintype == 0)
 		
